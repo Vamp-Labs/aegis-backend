@@ -1,0 +1,11 @@
+
+> aegis_backend@0.0.1 lint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+
+D:\Vs_Code_Project\Competition\WEB3\EVM\aegis\aegis_backend\src\auth\auth.module.ts
+  15:7   error  Async method 'useFactory' has no 'await' expression  @typescript-eslint/require-await
+  18:11  error  Unsafe assignment of an `any` value                  @typescript-eslint/no-unsafe-assignment
+
+✖ 2 problems (2 errors, 0 warnings)
+
