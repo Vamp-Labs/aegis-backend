@@ -38,8 +38,8 @@ export default async function handler(req: any, res: any) {
   return server(req, res);
 }
 
-// Only start the server for local development
-if (process.env.NODE_ENV !== 'production') {
+// Only start the server for local development if not running on Vercel
+if (!process.env.VERCEL) {
   async function runDev() {
     const app = await NestFactory.create(AppModule);
     app.use(helmet());
