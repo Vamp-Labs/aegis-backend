@@ -29,6 +29,10 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
 }
-bootstrap().catch((err) => {
-  console.error('Failure during bootstrap', err);
-});
+
+// Only start the server for local development
+if (process.env.NODE_ENV !== 'production') {
+  bootstrap().catch((err) => {
+    console.error('Failure during bootstrap', err);
+  });
+}
