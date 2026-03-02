@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -14,13 +14,13 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   /**
    * Generate a nonce for a given public address
    */
   generateNonce(publicAddress: string): string {
-    const nonce = uuidv4();
+    const nonce = randomUUID();
     const ttlSeconds =
       this.configService.get<number>('NONCE_TTL_SECONDS') || 300;
 
