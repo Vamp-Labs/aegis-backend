@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 
 let server: any;
@@ -26,6 +27,16 @@ async function bootstrapServer() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('Aegis API')
+    .setDescription('The Aegis Protocol automated API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
   await app.init();
   return app.getHttpAdapter().getInstance();
@@ -55,9 +66,20 @@ if (!process.env.VERCEL) {
         forbidNonWhitelisted: true,
       }),
     );
+
+    const config = new DocumentBuilder()
+      .setTitle('Aegis API')
+      .setDescription('The Aegis Protocol automated API documentation')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, documentFactory);
+
     const port = process.env.PORT ?? 3000;
     await app.listen(port);
     console.log(`Application is running on: http://localhost:${port}`);
+    console.log(`Swagger UI is available at: http://localhost:${port}/api`);
   }
 
   runDev().catch((err) => {
