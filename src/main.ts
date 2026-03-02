@@ -3,7 +3,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 
-async function bootstrap() {
+let server: any;
+
+async function bootstrapServer() {
   const app = await NestFactory.create(AppModule);
 
   // Security headers
@@ -25,14 +27,40 @@ async function bootstrap() {
     }),
   );
 
-  const port = process.env.PORT ?? 3000;
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
+  await app.init();
+  return app.getHttpAdapter().getInstance();
+}
+
+export default async function handler(req: any, res: any) {
+  if (!server) {
+    server = await bootstrapServer();
+  }
+  return server(req, res);
 }
 
 // Only start the server for local development
 if (process.env.NODE_ENV !== 'production') {
-  bootstrap().catch((err) => {
+  async function runDev() {
+    const app = await NestFactory.create(AppModule);
+    app.use(helmet());
+    app.enableCors({
+      origin: '*',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
+    const port = process.env.PORT ?? 3000;
+    await app.listen(port);
+    console.log(`Application is running on: http://localhost:${port}`);
+  }
+
+  runDev().catch((err) => {
     console.error('Failure during bootstrap', err);
   });
 }
